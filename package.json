@@ -1,0 +1,23 @@
+{
+  "name": "utils",
+  "version": "0.0.1",
+  "description": "",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "mocha test/ --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/i-xi-dev/utils.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/i-xi-dev/utils/issues"
+  },
+  "homepage": "https://github.com/i-xi-dev/utils#readme",
+  "devDependencies": {
+    "mocha": "^9.0.1"
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Byte.StreamReader.prototype.read(:ReadableStream)</title>
+    <script type="module">
+import { Byte, } from "../../../src/Byte.mjs";
+
+const fileInput2 = document.getElementById("fileInput2");
+const sizeOutput2 = document.getElementById("sizeOutput2");
+const ignoreSizeInput2 = document.getElementById("ignoreSizeInput2");
+const abortTimeInput2 = document.getElementById("abortTimeInput2");
+const abortInput2 = document.getElementById("abortInput2");
+const execButton2 = document.getElementById("execButton2");
+const output2 = document.getElementById("output2");
+
+execButton2.addEventListener("click", async (event) => {
+  sizeOutput2.value = "";
+  output2.value = "";
+  if (fileInput2.value === "") {
+    return;
+  }
+
+  try {
+    const response = await globalThis.fetch(fileInput2.value);
+    const contentLength = response.headers.get("Content-Length");
+    const byteCount = Number.parseInt(contentLength, 10);
+    if (Number.isSafeInteger(byteCount)) {
+      sizeOutput2.value = byteCount.toString(10);
+    }
+    else {
+      sizeOutput2.value = "不明";
+    }
+
+    const reader = new Byte.StreamReader();
+    reader.addEventListener("progress", (e) => {
+      console.log(e.loaded + "/" + e.total + ";" + e.lengthComputable);
+    });
+    const ac = new AbortController();
+    if (abortInput2.checked === true) {
+      const delay = Number.parseInt(abortTimeInput2.value, 10);
+      if (Number.isSafeInteger(delay) && (delay >= 0)) {
+        globalThis.setTimeout(() => {
+          ac.abort();
+        }, delay);
+      }
+    }
+    const bytes = await reader.read(response.body, (Number.isSafeInteger(byteCount) && (byteCount >= 0) ? byteCount : undefined), {
+      abortSignal: ac.signal,
+    });
+
+    output2.value = output2.value + "load completed (" + bytes.byteLength + ")";
+  }
+  catch (e) {
+    console.error(e);
+    window.alert(e.message);
+  }
+});
+    </script>
+  </head>
+  <body>
+    <h1>Byte.StreamReader.prototype.read(:ReadableStream)</h1>
+
+    <fieldset>
+      <legend>Response.body</legend>
+      <fieldset>
+        <legend>URL</legend>
+        <input id="fileInput2" type="text" value="../../_testdata/128.txt"/>
+      </fieldset>
+      <fieldset>
+        <legend>サイズ</legend>
+        <output id="sizeOutput2"></output>※Content-Lengthから取得<br/>
+        <label><input type="checkbox" id="ignoreSizeInput2"/>サイズ相違を無視</label>
+      </fieldset>
+      <fieldset>
+        <legend>中断</legend>
+        <input id="abortTimeInput2" type="text" value="10"/>ミリ秒後に<br/>
+        <label><input type="checkbox" id="abortInput2"/>中断する</label>
+      </fieldset>
+      <div>
+        <button id="execButton2">実行</button>
+      </div>
+      <fieldset>
+        <legend>結果</legend>
+        <pre><output id="output2"></output></pre>
+      </fieldset>
+    </fieldset>
+  </body>
+</html>

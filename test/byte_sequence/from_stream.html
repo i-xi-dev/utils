@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ByteSequence.fromStream(:ReadableStream)</title>
+    <script type="module">
+import { ByteSequence, } from "../../../src/ByteSequence.mjs";
+
+const fileInput1 = document.getElementById("fileInput1");
+const sizeInput1 = document.getElementById("sizeInput1");
+const ignoreSizeInput1 = document.getElementById("ignoreSizeInput1");
+const execButton1 = document.getElementById("execButton1");
+const output1 = document.getElementById("output1");
+
+fileInput1.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  sizeInput1.value = file.size.toString(10);
+});
+
+execButton1.addEventListener("click", async (event) => {
+  output1.value = "";
+  if (fileInput1.files.length !== 1) {
+    return;
+  }
+
+  const file = fileInput1.files[0];
+  try {
+    const sizeNum = Number.parseInt(sizeInput1.value, 10);
+    const bytes = await ByteSequence.fromStream(file.stream(), (Number.isSafeInteger(sizeNum) && (sizeNum >= 0) ? sizeNum : undefined), (ignoreSizeInput1.checked === true));
+
+    output1.value = output1.value + "load completed (" + bytes.count + ")";
+  }
+  catch (e) {
+    console.error(e);
+    window.alert(e.message);
+  }
+});
+
+const fileInput2 = document.getElementById("fileInput2");
+const sizeOutput2 = document.getElementById("sizeOutput2");
+const ignoreSizeInput2 = document.getElementById("ignoreSizeInput2");
+const execButton2 = document.getElementById("execButton2");
+const output2 = document.getElementById("output2");
+
+execButton2.addEventListener("click", async (event) => {
+  sizeOutput2.value = "";
+  output2.value = "";
+  if (fileInput2.value === "") {
+    return;
+  }
+
+  try {
+    const response = await globalThis.fetch(fileInput2.value);
+    const contentLength = response.headers.get("Content-Length");
+    const byteCount = Number.parseInt(contentLength, 10);
+    if (Number.isSafeInteger(byteCount)) {
+      sizeOutput2.value = byteCount.toString(10);
+    }
+    else {
+      sizeOutput2.value = "不明";
+    }
+
+    const bytes = await ByteSequence.fromStream(response.body, (Number.isSafeInteger(byteCount) && (byteCount >= 0) ? byteCount : undefined), (ignoreSizeInput2.checked === true));
+
+    output2.value = output2.value + "load completed (" + bytes.count + ")";
+  }
+  catch (e) {
+    console.error(e);
+    window.alert(e.message);
+  }
+});
+    </script>
+  </head>
+  <body>
+    <h1>ByteSequence.fromStream(:ReadableStream)</h1>
+    <fieldset>
+      <legend>Blob.stream()</legend>
+      <fieldset>
+        <legend>ファイル</legend>
+        <input id="fileInput1" type="file" />
+      </fieldset>
+      <fieldset>
+        <legend>サイズ</legend>
+        <input type="text" id="sizeInput1" value=""/>※整数ではない場合、無指定で実行する<br/>
+        <label><input type="checkbox" id="ignoreSizeInput1"/>サイズ相違を無視</label>
+      </fieldset>
+      <div>
+        <button id="execButton1">実行</button>
+      </div>
+      <fieldset>
+        <legend>結果</legend>
+        <pre><output id="output1"></output></pre>
+      </fieldset>
+    </fieldset>
+
+    <fieldset>
+      <legend>Response.body</legend>
+      <fieldset>
+        <legend>URL</legend>
+        <input id="fileInput2" type="text" value="../_testdata/128.txt"/>
+      </fieldset>
+      <fieldset>
+        <legend>サイズ</legend>
+        <output id="sizeOutput2"></output>※Content-Lengthから取得<br/>
+        <label><input type="checkbox" id="ignoreSizeInput2"/>サイズ相違を無視</label>
+      </fieldset>
+      <div>
+        <button id="execButton2">実行</button>
+      </div>
+      <fieldset>
+        <legend>結果</legend>
+        <pre><output id="output2"></output></pre>
+      </fieldset>
+    </fieldset>
+  </body>
+</html>
