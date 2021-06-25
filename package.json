@@ -1,6 +1,6 @@
 {
   "name": "@i-xi-dev/utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "main": "index.mjs",
@@ -25,6 +25,10 @@
     "mocha": "^9.0.1"
   },
   "files": [
-    "./index.mjs"
-  ]
+    "./index.mjs",
+    "./src"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
