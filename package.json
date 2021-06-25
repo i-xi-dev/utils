@@ -1,5 +1,5 @@
 {
-  "name": "utils",
+  "name": "@i-xi-dev/utils",
   "version": "0.0.1",
   "description": "",
   "type": "module",
@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/i-xi-dev/utils.git"
   },
+  "keywords": [
+    "byte",
+    "bytes"
+  ],
   "author": "",
   "license": "MIT",
   "bugs": {
@@ -19,5 +23,8 @@
   "homepage": "https://github.com/i-xi-dev/utils#readme",
   "devDependencies": {
     "mocha": "^9.0.1"
-  }
+  },
+  "files": [
+    "./index.mjs"
+  ]
 }
